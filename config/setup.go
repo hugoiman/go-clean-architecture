@@ -23,7 +23,7 @@ func Setup(router *mux.Router) {
 
 	// Setup Product
 	productRepository := productRepo.NewProductRepo(sql)
-	productService := productServ.NewProductService(&productRepository, &customerService)
+	productService := productServ.NewProductService(&productRepository)
 	productController := productContr.NewProductController(&productService)
 	productController.Route(router)
 }
