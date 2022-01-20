@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"go-clean-architecture/config"
-	load "go-clean-architecture/init"
+	"go-clean-architecture/internal"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -13,7 +14,9 @@ import (
 )
 
 func init() {
-	load.RunInit()
+	if config.ReadEnv() != nil {
+		os.Exit(0)
+	}
 }
 
 func main() {
@@ -22,7 +25,7 @@ func main() {
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT", "HEAD"})
 
-	config.Setup(router)
+	internal.Setup(router)
 
 	fmt.Println("Server running at :" + viper.GetString("server.port"))
 	log.Fatal(http.ListenAndServe(":"+viper.GetString("server.port"), handlers.CORS(origins, headers, methods)(router)))

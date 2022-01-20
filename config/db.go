@@ -8,25 +8,23 @@ import (
 	"github.com/spf13/viper"
 )
 
-var db *sql.DB
+type DB struct {}
 
 // ConnectSql is Singleton
-func ConnectSql() *sql.DB {
-	if db == nil {
-		username := viper.GetString("db.username")
-		password := viper.GetString("db.password")
-		host := viper.GetString("db.host")
-		port := viper.GetString("db.port")
-		dbname := viper.GetString("db.name")
+func (db *DB) ConnectSql() *sql.DB {
+	username := viper.GetString("db.username")
+	password := viper.GetString("db.password")
+	host := viper.GetString("db.host")
+	port := viper.GetString("db.port")
+	dbname := viper.GetString("db.name")
 
-		var err error
-		db, err = sql.Open("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+dbname+"?parseTime=true")
-		// db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3307)/zonart?parseTime=true")
+	var err error
+	conn, err := sql.Open("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+dbname+"?parseTime=true")
+	// db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3307)/zonart?parseTime=true")
 
-		if err != nil {
-			panic(fmt.Errorf("fatal error db is not connected: %w", err))
-		}
+	if err != nil {
+		panic(fmt.Errorf("fatal error db is not connected: %w", err))
 	}
 
-	return db
+	return conn
 }

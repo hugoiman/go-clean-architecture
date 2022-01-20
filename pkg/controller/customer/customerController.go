@@ -34,9 +34,11 @@ func (controller *CustomerController) GetAll(w http.ResponseWriter, r *http.Requ
 }
 
 func (controller *CustomerController) Get(w http.ResponseWriter, r *http.Request) {
-	customer, err := controller.CustomerService.Get("hugoiman")
+	vars := mux.Vars(r)
+	username := vars["username"]
+	customer, err := controller.CustomerService.Get(username)
 	if err != nil {
-		http.Error(w, "not found bos", http.StatusBadRequest)
+		http.Error(w, "not found bos"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	message, _ := json.Marshal(&customer)

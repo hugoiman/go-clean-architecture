@@ -1,53 +1,57 @@
 package repo
 
 import (
-	"database/sql"
+	"go-clean-architecture/config"
 	"go-clean-architecture/pkg/entity"
 )
 
-func NewCustomerRepo(sql *sql.DB) CustomerRepo {
+func NewCustomerRepository(db *config.DB) CustomerRepository {
 	return &CustomerRepoImpl{
-		Customer: entity.Customer{},
-		Db:       sql,
+		db:       db,
+		customer: entity.Customer{},
 	}
 }
 
 type CustomerRepoImpl struct {
-	Db       *sql.DB
-	Customer entity.Customer
+	db       *config.DB
+	customer entity.Customer
 }
 
 func (repo *CustomerRepoImpl) GetAll() (customers []entity.Customer) {
-	con := repo.Db
+	conn := repo.db.ConnectSql()
 	query := "SELECT id, username, name FROM customer"
-	rows, _ := con.Query(query)
+	rows, _ := conn.Query(query)
 
 	var id, username, name string
 	for rows.Next() {
 		rows.Scan(
 			&id, &username, &name,
 		)
-		repo.Customer.SetId(id)
-		repo.Customer.SetUsername(username)
-		repo.Customer.SetName(name)
+		repo.customer.SetId(id)
+		repo.customer.SetUsername(username)
+		repo.customer.SetName(name)
 
-		customers = append(customers, repo.Customer)
+		customers = append(customers, repo.customer)
 	}
 
-	defer con.Close()
+	defer rows.Close()
+	defer conn.Close()
 
 	return customers
 }
 
-func (repo *CustomerRepoImpl) Get(id string) (customer entity.Customer, err error) {
-	con := repo.Db
+func (repo *CustomerRepoImpl) Get(id string) (entity.Customer, error) {
+	conn := repo.db.ConnectSql()
 	query := "SELECT id, username, name FROM customer WHERE id = ? OR username = ?"
 
 	var username, name string
-	err = con.QueryRow(query, id, id).Scan(
+	err := conn.QueryRow(query, id, id).Scan(
 		&id, &username, &name,
 	)
+	repo.customer.SetId(id)
+	repo.customer.SetUsername(username)
+	repo.customer.SetName(name)
 
-	defer con.Close()
-	return customer, err
+	defer conn.Close()
+	return repo.customer, err
 }

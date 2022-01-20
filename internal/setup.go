@@ -1,6 +1,8 @@
-package config
+package internal
 
 import (
+	"go-clean-architecture/config"
+
 	customerContr "go-clean-architecture/pkg/controller/customer"
 	customerRepo "go-clean-architecture/pkg/repository/customer"
 	customerServ "go-clean-architecture/pkg/service/customer"
@@ -13,16 +15,16 @@ import (
 )
 
 func Setup(router *mux.Router) {
-	sql := ConnectSql()
+	var db *config.DB
 
 	// Setup Customer
-	customerRepository := customerRepo.NewCustomerRepo(sql)
+	customerRepository := customerRepo.NewCustomerRepository(db)
 	customerService := customerServ.NewCustomerService(&customerRepository)
 	customerController := customerContr.NewCustomerController(&customerService)
 	customerController.Route(router)
 
 	// Setup Product
-	productRepository := productRepo.NewProductRepo(sql)
+	productRepository := productRepo.NewProductRepository(db)
 	productService := productServ.NewProductService(&productRepository)
 	productController := productContr.NewProductController(&productService)
 	productController.Route(router)

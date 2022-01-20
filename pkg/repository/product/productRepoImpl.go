@@ -1,63 +1,65 @@
 package repo
 
 import (
-	"database/sql"
+	"go-clean-architecture/config"
 	"go-clean-architecture/pkg/entity"
 )
 
-func NewProductRepo(sql *sql.DB) ProductRepo {
-	return &ProductRepoImpl{
-		Db: sql,
+func NewProductRepository(db *config.DB) ProductRepository {
+	return &productRepositoryImpl{
+		db:      db,
+		product: entity.Product{},
 	}
 }
 
-type ProductRepoImpl struct {
-	Db *sql.DB
+type productRepositoryImpl struct {
+	db      *config.DB
+	product entity.Product
 }
 
-func (repo *ProductRepoImpl) GetAll() (products []entity.Product) {
-	con := repo.Db
+func (repo *productRepositoryImpl) GetAll() (products []entity.Product) {
+	conn := repo.db.ConnectSql()
 	query := "SELECT id, customer_id, name, price, qty FROM product"
-	rows, _ := con.Query(query)
+	rows, _ := conn.Query(query)
 
-	var id, customer_id, name string
+	var id, customerId, name string
 	var price, qty int
-	var product entity.Product
 
 	for rows.Next() {
 		rows.Scan(
-			&id, &customer_id, &name, &price, &qty,
+			&id, &customerId, &name, &price, &qty,
 		)
-		product.SetId(id)
-		product.SetCustomerId(customer_id)
-		product.SetName(name)
-		product.SetPrice(price)
-		product.SetQty(qty)
+		repo.product.SetId(id)
+		repo.product.SetCustomerId(customerId)
+		repo.product.SetName(name)
+		repo.product.SetPrice(price)
+		repo.product.SetQty(qty)
 
-		products = append(products, product)
+		products = append(products, repo.product)
 	}
 
-	defer con.Close()
+	defer rows.Close()
+	defer conn.Close()
 
 	return products
 }
 
-func (repo *ProductRepoImpl) Get(name string) (product entity.Product, err error) {
-	con := repo.Db
+func (repo *productRepositoryImpl) Get(name string) (entity.Product, error) {
+	conn := repo.db.ConnectSql()
 	query := "SELECT id, customer_id, name, price, qty FROM product WHERE name = ?"
 
 	var customerId, id string
 	var price, qty int
-	err = con.QueryRow(query, name).Scan(
+	err := conn.QueryRow(query, name).Scan(
 		&id, &customerId, &name, &price, &qty,
 	)
 
-	product.SetId(id)
-	product.SetCustomerId(customerId)
-	product.SetName(name)
-	product.SetPrice(price)
-	product.SetQty(qty)
+	repo.product.SetId(id)
+	repo.product.SetCustomerId(customerId)
+	repo.product.SetName(name)
+	repo.product.SetPrice(price)
+	repo.product.SetQty(qty)
 
-	defer con.Close()
-	return product, err
+	defer conn.Close()
+	return repo.product, err
 }

@@ -5,14 +5,14 @@ import (
 	customerRepo "go-clean-architecture/pkg/repository/customer"
 )
 
-func NewCustomerService(customerRepository *customerRepo.CustomerRepo) CustomerService {
+func NewCustomerService(customerRepository *customerRepo.CustomerRepository) CustomerService {
 	return &CustomerServiceImpl{
 		CustomerRepository: *customerRepository,
 	}
 }
 
 type CustomerServiceImpl struct {
-	CustomerRepository customerRepo.CustomerRepo
+	CustomerRepository customerRepo.CustomerRepository
 }
 
 func (service *CustomerServiceImpl) GetAll() []entity.Customer {

@@ -5,22 +5,22 @@ import (
 	productRepo "go-clean-architecture/pkg/repository/product"
 )
 
-func NewProductService(productRepository *productRepo.ProductRepo) ProductService {
-	return &ProductServiceImpl{
-		ProductRepository: *productRepository,
+func NewProductService(productRepository *productRepo.ProductRepository) ProductService {
+	return &productServiceImpl{
+		productRepository: *productRepository,
 	}
 }
 
-type ProductServiceImpl struct {
-	ProductRepository productRepo.ProductRepo
+type productServiceImpl struct {
+	productRepository productRepo.ProductRepository
 }
 
-func (service *ProductServiceImpl) GetAll() []entity.Product {
-	products := service.ProductRepository.GetAll()
+func (service *productServiceImpl) GetAll() []entity.Product {
+	products := service.productRepository.GetAll()
 	return products
 }
 
-func (service *ProductServiceImpl) Get(name string) (entity.Product, error) {
-	product, err := service.ProductRepository.Get(name)
+func (service *productServiceImpl) Get(name string) (entity.Product, error) {
+	product, err := service.productRepository.Get(name)
 	return product, err
 }
