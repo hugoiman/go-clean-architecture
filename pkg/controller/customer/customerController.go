@@ -19,9 +19,9 @@ type customerController struct {
 	customerService customerServ.CustomerService
 }
 
-func (controller *customerController) Route(router *mux.Router) {
+func (controller *customerController) Route(router, auth *mux.Router) {
 	router.HandleFunc("/customer/{username}", controller.Get).Methods("GET")
-	router.HandleFunc("/customer", controller.GetAll).Methods("GET")
+	auth.HandleFunc("/customer", controller.GetAll).Methods("GET")
 }
 
 func (controller *customerController) GetAll(w http.ResponseWriter, r *http.Request) {

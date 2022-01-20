@@ -8,7 +8,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-type DB struct {}
+func NewDB() DB {
+	return DB{}
+}
+
+type DB struct{}
 
 // ConnectSql is Singleton
 func (db *DB) ConnectSql() *sql.DB {

@@ -4,6 +4,7 @@ import (
 	"go-clean-architecture/config"
 
 	authContr "go-clean-architecture/pkg/controller/auth"
+	"go-clean-architecture/pkg/middleware"
 	authRepo "go-clean-architecture/pkg/repository/auth"
 	authServ "go-clean-architecture/pkg/service/auth"
 
@@ -19,22 +20,27 @@ import (
 )
 
 func Setup(router *mux.Router) {
-	var db *config.DB
+	db := config.NewDB()
+
+	// Setup Middleware
+	mw := middleware.NewMiddleware()
+	auth := router.PathPrefix("").Subrouter()
+	auth.Use(mw.Auth)
 
 	// Setup Customer
-	customerRepository := customerRepo.NewCustomerRepository(db)
+	customerRepository := customerRepo.NewCustomerRepository(&db)
 	customerService := customerServ.NewCustomerService(&customerRepository)
 	customerController := customerContr.NewCustomerController(&customerService)
-	customerController.Route(router)
+	customerController.Route(router, auth)
 
 	// Setup Auth
-	authRepository := authRepo.NewAuthRepository(db)
+	authRepository := authRepo.NewAuthRepository(&db)
 	authService := authServ.NewAuthService(&authRepository, &customerService)
 	authController := authContr.NewAuthController(&authService)
 	authController.Route(router)
 
 	// Setup Product
-	productRepository := productRepo.NewProductRepository(db)
+	productRepository := productRepo.NewProductRepository(&db)
 	productService := productServ.NewProductService(&productRepository)
 	productController := productContr.NewProductController(&productService)
 	productController.Route(router)
