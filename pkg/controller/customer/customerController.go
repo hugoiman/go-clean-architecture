@@ -9,23 +9,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewCustomerController(customerService *customerServ.CustomerService) CustomerController {
-	return CustomerController{
-		CustomerService: *customerService,
+func NewCustomerController(customerService *customerServ.CustomerService) customerController {
+	return customerController{
+		customerService: *customerService,
 	}
 }
 
-type CustomerController struct {
-	CustomerService customerServ.CustomerService
+type customerController struct {
+	customerService customerServ.CustomerService
 }
 
-func (controller *CustomerController) Route(router *mux.Router) {
+func (controller *customerController) Route(router *mux.Router) {
 	router.HandleFunc("/customer/{username}", controller.Get).Methods("GET")
 	router.HandleFunc("/customer", controller.GetAll).Methods("GET")
 }
 
-func (controller *CustomerController) GetAll(w http.ResponseWriter, r *http.Request) {
-	customers := controller.CustomerService.GetAll()
+func (controller *customerController) GetAll(w http.ResponseWriter, r *http.Request) {
+	customers := controller.customerService.GetAll()
 	message, _ := json.Marshal(&customers)
 
 	w.Header().Set("Content-type", "application/json")
@@ -33,10 +33,10 @@ func (controller *CustomerController) GetAll(w http.ResponseWriter, r *http.Requ
 	w.Write(message)
 }
 
-func (controller *CustomerController) Get(w http.ResponseWriter, r *http.Request) {
+func (controller *customerController) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	username := vars["username"]
-	customer, err := controller.CustomerService.Get(username)
+	customer, err := controller.customerService.Get(username)
 	if err != nil {
 		http.Error(w, "not found bos"+err.Error(), http.StatusBadRequest)
 		return

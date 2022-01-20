@@ -6,18 +6,18 @@ import (
 )
 
 func NewCustomerRepository(db *config.DB) CustomerRepository {
-	return &CustomerRepoImpl{
+	return &customerRepoImpl{
 		db:       db,
 		customer: entity.Customer{},
 	}
 }
 
-type CustomerRepoImpl struct {
+type customerRepoImpl struct {
 	db       *config.DB
 	customer entity.Customer
 }
 
-func (repo *CustomerRepoImpl) GetAll() (customers []entity.Customer) {
+func (repo *customerRepoImpl) GetAll() (customers []entity.Customer) {
 	conn := repo.db.ConnectSql()
 	query := "SELECT id, username, name FROM customer"
 	rows, _ := conn.Query(query)
@@ -40,7 +40,7 @@ func (repo *CustomerRepoImpl) GetAll() (customers []entity.Customer) {
 	return customers
 }
 
-func (repo *CustomerRepoImpl) Get(id string) (entity.Customer, error) {
+func (repo *customerRepoImpl) Get(id string) (entity.Customer, error) {
 	conn := repo.db.ConnectSql()
 	query := "SELECT id, username, name FROM customer WHERE id = ? OR username = ?"
 

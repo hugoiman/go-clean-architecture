@@ -6,21 +6,21 @@ import (
 )
 
 func NewCustomerService(customerRepository *customerRepo.CustomerRepository) CustomerService {
-	return &CustomerServiceImpl{
-		CustomerRepository: *customerRepository,
+	return &customerServiceImpl{
+		customerRepository: *customerRepository,
 	}
 }
 
-type CustomerServiceImpl struct {
-	CustomerRepository customerRepo.CustomerRepository
+type customerServiceImpl struct {
+	customerRepository customerRepo.CustomerRepository
 }
 
-func (service *CustomerServiceImpl) GetAll() []entity.Customer {
-	customers := service.CustomerRepository.GetAll()
+func (service *customerServiceImpl) GetAll() []entity.Customer {
+	customers := service.customerRepository.GetAll()
 	return customers
 }
 
-func (service *CustomerServiceImpl) Get(id string) (entity.Customer, error) {
-	customer, err := service.CustomerRepository.Get(id)
+func (service *customerServiceImpl) Get(id string) (entity.Customer, error) {
+	customer, err := service.customerRepository.Get(id)
 	return customer, err
 }
