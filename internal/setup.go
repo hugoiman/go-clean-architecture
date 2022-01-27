@@ -27,17 +27,17 @@ func Setup(router *mux.Router) {
 	auth := router.PathPrefix("").Subrouter()
 	auth.Use(mw.Auth)
 
+	// Setup Auth
+	authRepository := authRepo.NewAuthRepository(&db)
+	authService := authServ.NewAuthService(&authRepository)
+	authController := authContr.NewAuthController(&authService)
+	authController.Route(router)
+
 	// Setup Customer
 	customerRepository := customerRepo.NewCustomerRepository(&db)
 	customerService := customerServ.NewCustomerService(&customerRepository)
 	customerController := customerContr.NewCustomerController(&customerService)
 	customerController.Route(router, auth)
-
-	// Setup Auth
-	authRepository := authRepo.NewAuthRepository(&db)
-	authService := authServ.NewAuthService(&authRepository, &customerService)
-	authController := authContr.NewAuthController(&authService)
-	authController.Route(router)
 
 	// Setup Product
 	productRepository := productRepo.NewProductRepository(&db)

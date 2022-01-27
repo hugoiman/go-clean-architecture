@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"go-clean-architecture/pkg/dto"
 	"net/http"
 	"strings"
@@ -34,9 +35,9 @@ func (mw *middlewareImpl) Auth(next http.Handler) http.Handler {
 			http.Error(w, "Token invalid. Dibutuhkan autentikasi. Silahkan login.", http.StatusUnauthorized) // Token expired/key tidak cocok(invalid)
 			return
 		}
+		ctx := context.WithValue(r.Context(), "userInfo", userClaims)
+		r = r.WithContext(ctx)
 
-		// context.Set(r, "user", userClaims)
-		// fmt.Printf("%+v", userClaims)
 		next.ServeHTTP(w, r)
 	})
 }

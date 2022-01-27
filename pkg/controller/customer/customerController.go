@@ -22,6 +22,7 @@ type customerController struct {
 func (controller *customerController) Route(router, auth *mux.Router) {
 	router.HandleFunc("/customer/{username}", controller.Get).Methods("GET")
 	auth.HandleFunc("/customer", controller.GetAll).Methods("GET")
+	auth.HandleFunc("/myinfo", controller.GetMyInfo).Methods("GET")
 }
 
 func (controller *customerController) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +43,15 @@ func (controller *customerController) Get(w http.ResponseWriter, r *http.Request
 		return
 	}
 	message, _ := json.Marshal(&customer)
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(message)
+}
+
+func (controller *customerController) GetMyInfo(w http.ResponseWriter, r *http.Request) {
+	myInfo := controller.customerService.GetMyInfo(r.Context())
+	message, _ := json.Marshal(&myInfo)
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
