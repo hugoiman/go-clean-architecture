@@ -30,3 +30,5 @@ func main() {
 	fmt.Println("Server running at :" + viper.GetString("server.port"))
 	log.Fatal(http.ListenAndServe(":"+viper.GetString("server.port"), handlers.CORS(origins, headers, methods)(router)))
 }
+
+// just test
